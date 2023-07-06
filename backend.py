@@ -75,22 +75,6 @@ def register():
 
 
 
-@app.route('/mysite/givefood', methods=['GET', 'POST'])
-def givefood():
-
-    data=request.get_json()
-
-    Fooditem = data['Fooditem']
-    place = data['place']
-    Quantity = data['Quantity']
-    Remainingshelflife = data['Remainingshelflife']
-
-
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('INSERT INTO givefood VALUES (NULL, %s, %s, %s,%s)', (Fooditem, place,Quantity,Remainingshelflife,))
-    mysql.connection.commit()
-
 
 
 
@@ -100,12 +84,6 @@ def sensordata():
 
 
     data=request.get_json()
-
-
-
-
-
-
     value1 = data['value1']
     value2 = data['value2']
     value3 = data['value3']
