@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, session
+from flask import Flask, request, redirect, render_template, url_for, session,jsonify
 from flask_session import Session
 from flask_cors import CORS
 from flask_httpauth import HTTPBasicAuth
@@ -12,10 +12,10 @@ CORS(app)   # So that the frontend and backend can make requests with necessary 
 # auth = HTTPBasicAuth()
 
 # Setting Up DB
-app.config['MYSQL_HOST'] = 'innohack.mysql.pythonanywhere-services.com'
-app.config['MYSQL_USER'] = 'innohack'
+app.config['MYSQL_HOST'] = 'oenlbtms.mysql.pythonanywhere-services.com'
+app.config['MYSQL_USER'] = 'oenlbtms'
 app.config['MYSQL_PASSWORD'] = 'insaneinsane'
-app.config['MYSQL_DB'] = 'innohack$users'
+app.config['MYSQL_DB'] = 'oenlbtms$sensordatas'
 mysql = MySQL(app)
 
 app.secret_key = '\xcb\x9e\x84(#/\t\xf74\xfd\x10\x06~2.\xe7\xed\x90hGNNX\xc7'
@@ -88,8 +88,33 @@ def sensordata():
     value2 = data['value2']
     value3 = data['value3']
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('INSERT INTO oen_sensordata VALUES (NULL, %s, %s,%s)', (value1, value2,value3,))
+    cursor.execute('INSERT INTO sensor_data VALUES (NULL, %s, %s,%s,CURRENT_TIMESTAMP)', (value1, value2,value3,))
     mysql.connection.commit()
+
+
+
+
+
+
+
+@app.route('/mysite/senddata', methods=['GET', 'POST'])
+def senddata():
+
+
+
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM sensor_data ORDER BY id DESC LIMIT 1")
+
+
+    data = cursor.fetchone()
+
+
+    cursor.close()
+    return jsonify(data)
+
+
+
 
 
 
