@@ -11,14 +11,15 @@ const int temperatureSensorPin = 34; // Analog pin for LM35 temperature sensor
 float voltage, current, temperature; // Variables to store sensor values
 
 //initialising wifi
-const char* ssid = "nihalrahoof";      
-const char* password = "nihalrahoof123nn";  
+const char* ssid = "Realme 7 Pro";      
+const char* password = "soju@541";  
 
 void setup() {
 
   //connecing to wifi
-   Serial.begin(9600);
+   Serial.begin(115200);
   delay(1000);
+  Serial.println("Connecting to WiFi...");
 
   WiFi.begin((char*)ssid, password); // Cast ssid to char* type
 
@@ -66,14 +67,15 @@ void loop() {
 
   
 
-  delay(1000); // Delay before taking the next reading
+  delay(500); // Delay before taking the next reading
   
 if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
 
    //sending sensor data to flask page
    HTTPClient http;   
+   Serial.println("starting to send ");
 
-   http.begin("https://innohack.pythonanywhere.com/mysite/sensordata");
+   http.begin("https://oenlbtms.pythonanywhere.com/mysite/sensordata");
    http.addHeader("Content-Type", "application/json");  
    String httpRequestData = "{\"value1\":\"" + String(temperature) + "\",\"value2\":\"" + String(current) + "\",\"value3\":\"" + String(voltage) + "\"}";
    int httpResponseCode = http.POST(httpRequestData);   
@@ -96,6 +98,6 @@ if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
 
  }
 
-  delay(2000);  //Send a request every 10 seconds
+  delay(1000);  //Send a request every 10 seconds
 
 }
