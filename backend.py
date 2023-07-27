@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, session,jsonify
+from flask import Flask,session,jsonify,request
 from flask_session import Session
 from flask_cors import CORS
 from flask_httpauth import HTTPBasicAuth
@@ -26,115 +26,56 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 Session(app)
 
-
-
-@app.route('/')
-def hello_world():
-    return 'iyg'
-
-
-
-
-
-
-@app.route('/mysite/login', methods=['GET', 'POST'])
-def login():
-    data=request.get_json()
-    username = data['username']
-    password = data['password']
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password,))
-    account = cursor.fetchone()
-    if account:
-            session['loggedin'] = True
-            session['password'] = account['password']
-            session['username'] = account['username']
-            return 5
-    else:
-            return 'unsuccessfull!'
-
-
-
-
-
-
-@app.route('/mysite/register', methods=['GET', 'POST'])
-def register():
-
-    data=request.get_json()
-
-
-    username = data['username']
-    password = data['password']
-    email = data['email']
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('INSERT INTO accounts VALUES (NULL, %s, %s, %s)', (username, password, email,))
-    mysql.connection.commit()
-
-
-
-
-
-
 @app.route('/mysite/sensordata', methods=['GET', 'POST'])
 def sensordata():
 
+    data=request.get_json()
+    value1 = data['value1']
+    value2 = data['value2']
+    value3 = data['value3']
+    value4 = data['value4']
+    value5 = data['value5']
+    value6 = data['value6']
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('INSERT INTO lbtms_datasheet VALUES (NULL,CURRENT_TIMESTAMP, %s, %s,%s,%s,%s,%s)', (value1, value2,value3,value4,value6,value5,))
+    mysql.connection.commit()
+
+@app.route('/mysite/sensordataerror', methods=['GET', 'POST'])
+def sensordataerror():
 
 
     data=request.get_json()
     value1 = data['value1']
     value2 = data['value2']
     value3 = data['value3']
+    value4 = data['value4']
+    value5 = data['value5']
+    value6 = data['value6']
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('INSERT INTO sensor_data VALUES (NULL, %s, %s,%s,CURRENT_TIMESTAMP)', (value1, value2,value3,))
+    cursor.execute('INSERT INTO fault_data VALUES (NULL,CURRENT_TIMESTAMP, %s, %s,%s,%s,%s,%s)', (value1, value2,value3,value4,value6,value5,))
     mysql.connection.commit()
-
-
-
-
 
 
 
 @app.route('/mysite/senddata', methods=['GET', 'POST'])
 def senddata():
-
-
-
-
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM sensor_data ORDER BY id DESC LIMIT 1")
-
-
+    cursor.execute("SELECT * FROM lbtms_datasheet ORDER BY id DESC LIMIT 1")
     data = cursor.fetchone()
-
-
     cursor.close()
+    if data['temperature_cell1'] > 600 or data['temperature_cell2'] > 600 or data['temperature_cell3'] > 600 or data['temperature_cell4'] > 600 or data['Voltage'] > 8 or data['Current'] > 10:
+       data['status'] = "Fault detected"
+    else:
+       data['status'] = "Normal"
     return jsonify(data)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route('/mysite/senddatafault', methods=['GET', 'POST'])
+def senddatafault():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM fault_data ORDER BY id DESC LIMIT 1")
+    data = cursor.fetchone()
+    cursor.close()
+    return jsonify(data)
 
 
 
