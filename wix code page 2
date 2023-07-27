@@ -1,0 +1,28 @@
+const axios = require('axios');
+$w.onReady(function () {
+});
+    axios
+        .post("https://oenlbtms.pythonanywhere.com/mysite/senddatafault", {
+            auth: {
+                username: 'admin',
+                password: 'insane',
+            },
+			
+		})
+        .then(function (response) {
+            console.log("Authenticated");
+            console.log(response.data);
+			$w('#text28').text = response.data.date.toString();
+			$w('#text29').text = response.data.Current.toString();
+			$w('#text30').text = response.data.Voltage.toString();
+			$w('#text42').text = response.data.temperature_cell1.toString();
+            $w('#text43').text = response.data.temperature_cell2.toString();
+            $w('#text44').text = response.data.temperature_cell2.toString();
+            $w('#text45').text = response.data.temperature_cell3.toString();
+			$w('#text37').text = response.data.id.toString();
+            
+            
+        })
+        .catch(function (error) {
+            console.log("Error on Authentication : ", error);
+        });
